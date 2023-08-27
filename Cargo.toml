@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = [
+    "tracing_json",
+    "tracing_json_derive",
+]
+
+#[patch.crates-io]
+#tracing_json = { path = "tracing_json" }
