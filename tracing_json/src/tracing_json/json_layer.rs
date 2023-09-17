@@ -82,6 +82,7 @@ where
             "target": event.metadata().target(),
             "name": event.metadata().name(),
             "level": event.metadata().level().to_string(),
+            "file": format!("{}:{}", event.metadata().file().unwrap_or_default(), event.metadata().line().unwrap_or_default()),
             "fields": fields,
             "spans": spans,
         });
