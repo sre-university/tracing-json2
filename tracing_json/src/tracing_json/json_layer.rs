@@ -78,12 +78,15 @@ where
 
         // And create our output
         let output = serde_json::json!({
-            "timestamp": Self::get_rfc_3339_time(),
-            "target": event.metadata().target(),
-            "name": event.metadata().name(),
-            "level": event.metadata().level().to_string(),
-            "fields": fields,
-            "spans": spans,
+            "severity": event.metadata().level().to_string(),
+            "message": fields.get("message").clone().unwrap_or(&serde_json::json!("default message")),
+            "in_file": format!("{}:{}", event.metadata().file().unwrap_or_default(), event.metadata().line().unwrap_or_default()),
+            "_":{
+                "timestamp": Self::get_rfc_3339_time(),
+                "target": event.metadata().target(),
+                "fields": fields,
+                "spans": spans,
+            }
         });
         println!("{}", serde_json::to_string(&output).unwrap());
     }
