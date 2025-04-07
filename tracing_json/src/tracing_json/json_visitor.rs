@@ -24,8 +24,15 @@ impl<'a> tracing::field::Visit for JsonVisitor<'a> {
     }
 
     fn record_str(&mut self, field: &tracing::field::Field, value: &str) {
-        self.0
-            .insert(field.name().to_string(), serde_json::json!(value));
+        match serde_json::from_str::<serde_json::Value>(value) {
+            Ok(value) => {
+                self.0.insert(field.name().to_string(), value);
+            }
+            Err(_) => {
+                self.0
+                    .insert(field.name().to_string(), serde_json::json!(value));
+            }
+        }
     }
 
     fn record_error(
