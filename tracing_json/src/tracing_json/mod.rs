@@ -7,8 +7,9 @@ use std::collections::BTreeMap;
 
 mod json_layer;
 mod json_visitor;
-
+mod try_json;
 pub use json_layer::JsonLayer;
+pub use try_json::TryJson;
 
 #[derive(Debug)]
 struct JsonFieldStorage(BTreeMap<String, serde_json::Value>);

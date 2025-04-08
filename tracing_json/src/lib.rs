@@ -1,6 +1,6 @@
 mod tracing_json;
-
 pub use tracing_json::JsonLayer;
+pub use tracing_json::TryJson;
 
 #[cfg(feature = "tracing_json_derive")]
 extern crate tracing_json_derive;

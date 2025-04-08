@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tracing::*;
 use tracing_core::{Level, LevelFilter};
-use tracing_json::JsonLayer;
+use tracing_json::{JsonLayer, TryJson};
 use tracing_json_derive::JsonTracing;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
@@ -48,9 +48,22 @@ struct FooData {
     foo_comment: Option<String>,
 }
 
+#[derive(Serialize, Deserialize)]
+struct SomeStruct {
+    field_1: i32,
+    field_2: String,
+    field_3: Option<String>,
+}
+
 #[instrument]
 fn foo_func(data: FooData, data2: BarData, port: u16) {
-    let span = span!(Level::TRACE, "foo_span", ?data, ?data2, port);
+    let some_json_string = r#"{"some_key": "some_key"}"#;
+    let some_struct = SomeStruct {
+        field_1: 123,
+        field_2: "field_2".to_string(),
+        field_3: Some("field_3".to_string()),
+    };
+    let span = span!(Level::TRACE, "foo_span", ?data, ?data2, port, some_json_string, some_struct=?TryJson(&some_struct));
     let _enter = span.enter();
 
     warn!("foo before");
