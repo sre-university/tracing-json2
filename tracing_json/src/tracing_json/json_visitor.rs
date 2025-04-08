@@ -49,8 +49,7 @@ impl<'a> tracing::field::Visit for JsonVisitor<'a> {
                             self.0.insert(field.name().to_string(), value1);
                         }
                         Err(_) => {
-                            let s = format!("{:?}", v);
-                            self.0.insert(field.name().to_string(), s.into());
+                            self.0.insert(field.name().to_string(), v.into());
                         }
                     }
                 }
