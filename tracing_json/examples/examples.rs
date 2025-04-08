@@ -63,7 +63,7 @@ fn foo_func(data: FooData, data2: BarData, port: u16) {
         field_2: "field_2".to_string(),
         field_3: Some("field_3".to_string()),
     };
-    let span = span!(Level::TRACE, "foo_span", ?data, ?data2, port, some_json_string, some_struct=?TryJson(&some_struct));
+    let span = span!(Level::TRACE, "foo_span", ?data, ?data2, port, some_json_string, to_log_fields.some_struct=?TryJson(&some_struct));
     let _enter = span.enter();
 
     warn!("foo before");
