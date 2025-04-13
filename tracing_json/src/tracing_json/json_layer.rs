@@ -56,49 +56,18 @@ where
     fn on_event(&self, event: &tracing::Event<'_>, ctx: tracing_subscriber::layer::Context<'_, S>) {
         // All of the span context
         let mut spans = vec![];
-        let mut to_log_fields: BTreeMap<String, serde_json::Value> = BTreeMap::new();
         if let Some(scope) = ctx.event_scope(event) {
             for span in scope.from_root() {
                 let extensions = span.extensions();
                 let storage = extensions.get::<JsonFieldStorage>();
                 if let Some(storage) = storage {
-                    let mut fields = storage.0.clone();
-                    let keys_to_extract: Vec<String> = fields.keys().cloned().collect();
-                    let span_id = span.id();
-                    let span_name = span.metadata().name();
-                    let span_level = span.metadata().level().to_string();
-                    let span_target = span.metadata().target();
-                    for key in keys_to_extract {
-                        if key.starts_with("to_log_fields.") {
-                            let moved_key = key.replace("to_log_fields.", "");
-                            to_log_fields
-                                .insert(moved_key.clone(), fields.get(&key).unwrap().clone());
-                            fields.insert(
-                                key.clone(),
-                                serde_json::json!(format!(
-                                    "moved how '{}' to log fields",
-                                    moved_key
-                                )),
-                            );
-                        }
-                    }
-
+                    let field_data: &BTreeMap<String, serde_json::Value> = &storage.0;
                     spans.push(serde_json::json!({
-                        "id": format!("{:?}", span_id),
-                        "name": span_name,
-                        "level": span_level.to_string(),
-                        "target": span_target,
-                        "fields": fields,
+                        "target": span.metadata().target(),
+                        "name": span.name(),
+                        "level": span.metadata().level().to_string(),
+                        "fields": field_data,
                     }));
-
-                    // let field_data: &BTreeMap<String, serde_json::Value> = &storage.0;
-
-                    // spans.push(serde_json::json!({
-                    //     "target": span.metadata().target(),
-                    //     "name": span.name(),
-                    //     "level": span.metadata().level().to_string(),
-                    //     "fields": field_data,
-                    // }));
                 }
             }
         }
@@ -109,14 +78,9 @@ where
         event.record(&mut visitor);
 
         // And create our output
-        let message = fields
-            .get("message")
-            .unwrap_or(&serde_json::json!("default message"))
-            .clone();
-        fields.extend(to_log_fields);
         let output = serde_json::json!({
             "severity": event.metadata().level().to_string(),
-            "message": message,
+            "message": fields.get("message").clone().unwrap_or(&serde_json::json!("default message")),
             "in_file": format!("{}:{}", event.metadata().file().unwrap_or_default(), event.metadata().line().unwrap_or_default()),
             "_":{
                 "timestamp": Self::get_rfc_3339_time(),
@@ -125,6 +89,9 @@ where
                 "spans": spans,
             }
         });
-        println!("{}", serde_json::to_string(&output).unwrap());
+        match serde_json::to_string(&output) {
+            Ok(json) => println!("{}", json),
+            Err(e) => eprintln!("Error serializing JSON: {} for this value {}", e, output),
+        }
     }
 }
