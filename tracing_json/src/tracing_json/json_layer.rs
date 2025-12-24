@@ -89,6 +89,7 @@ where
                 "spans": spans,
             }
         });
+        // match serde_json::to_string_pretty(&output) {
         match serde_json::to_string(&output) {
             Ok(json) => println!("{}", json),
             Err(e) => eprintln!("Error serializing JSON: {} for this value {}", e, output),

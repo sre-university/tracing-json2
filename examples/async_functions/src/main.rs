@@ -11,18 +11,18 @@ use tracing_subscriber::util::SubscriberInitExt;
 
 fn init_tracing() {
     let filter = EnvFilter::new("async_functions=info");
-    // tracing_subscriber::registry()
-    //     .with(JsonLayer)
-    //     .with(filter)
-    //     .init();
-
-    tracing_subscriber::fmt()
-        .with_thread_ids(true)
-        .with_file(true)
-        .with_line_number(true)
-        .with_target(true)
-        .with_env_filter(filter)
+    tracing_subscriber::registry()
+        .with(JsonLayer)
+        .with(filter)
         .init();
+
+    // tracing_subscriber::fmt()
+    //     .with_thread_ids(true)
+    //     .with_file(true)
+    //     .with_line_number(true)
+    //     .with_target(true)
+    //     .with_env_filter(filter)
+    //     .init();
 
     // tracing_subscriber::registry()
     //     .with(JsonLayer)
