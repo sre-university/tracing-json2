@@ -1,0 +1,21 @@
+[package]
+name = "basic_tracing"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tracing-json2 = { path = "../../tracing_json", package = "tracing-json", features = [
+  "derive",
+] }
+
+
+tracing_json_derive = { version = "0.1", path = "../../tracing_json_derive" }
+
+tracing = { version = "0.1" }
+tracing-core = { version = "0.1" }
+tracing-subscriber = { version = "0.3", features = ["json"] }
+
+tracing-serde = { version = "0.2.0", features = ["valuable-serde"] }
+serde_json = "1.0"
+
+serde = { version = "1.0", features = ["derive"] }
